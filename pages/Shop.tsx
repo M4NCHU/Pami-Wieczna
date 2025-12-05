@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Product } from '../types';
 
-const products: Product[] = [
+export const products: Product[] = [
   {
     id: 'p1',
     name: 'Klasyczna Czerń',
@@ -56,12 +56,14 @@ const Shop: React.FC = () => {
                 <p className="text-sm text-stone-500 mt-1 mb-4">{product.material}</p>
                 <p className="text-stone-600 text-sm mb-6 flex-grow">{product.description}</p>
                 <div className="flex items-center justify-between mt-auto">
-                  <span className="text-2xl font-bold text-stone-900">{product.price} zł</span>
+                  <div className="flex flex-col">
+                    <span className="text-2xl font-bold text-stone-900">{product.price} zł</span>
+                  </div>
                   <Link 
                     to={`/create?product=${product.id}`}
                     className="inline-flex items-center px-4 py-2 bg-stone-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-stone-700 active:bg-stone-900 focus:outline-none focus:border-stone-900 focus:ring ring-stone-300 disabled:opacity-25 transition ease-in-out duration-150"
                   >
-                    Wybierz
+                    Kup teraz
                   </Link>
                 </div>
               </div>

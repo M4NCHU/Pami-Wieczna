@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -7,9 +8,24 @@ export interface Product {
   image: string;
 }
 
+export interface Location {
+  lat: number;
+  lng: number;
+}
+
+export interface FamilyMember {
+  id: string;
+  name: string;
+  relation: 'grandparent' | 'parent' | 'spouse' | 'child' | 'sibling' | 'grandchild';
+  photoUrl?: string;
+  birthDate?: string;
+  deathDate?: string; // Optional (if undefined/null => living)
+}
+
 export interface MemorialProfile {
   id: string;
-  firstName: string;
+  userId: string; // Owner of the profile (The User)
+  firstName: string; // The Person
   lastName: string;
   birthDate: string;
   deathDate: string;
@@ -18,6 +34,8 @@ export interface MemorialProfile {
   mainPhotoUrl: string;
   galleryUrls: string[];
   candles: Candle[];
+  location?: Location;
+  familyTree?: FamilyMember[];
 }
 
 export interface Candle {
@@ -33,7 +51,15 @@ export interface OrderFormData {
   lastName: string;
   birthDate: string;
   deathDate: string;
-  bioKeywords: string; // Used for AI generation
+  bioKeywords: string;
   bio: string;
   quote: string;
+  location?: Location;
+}
+
+export interface User {
+  id: string;
+  username: string;
+  role: 'admin' | 'user';
+  walletBalance: number;
 }

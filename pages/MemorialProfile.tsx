@@ -1,41 +1,55 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { MemorialProfile as ProfileType, Candle } from '../types';
-import { Flame } from 'lucide-react';
-
-// Mock data for demo purposes
-const demoProfile: ProfileType = {
-  id: 'demo',
-  firstName: 'Jan',
-  lastName: 'Kowalski',
-  birthDate: '1945-03-12',
-  deathDate: '2023-11-20',
-  quote: "Nie umiera ten, kto trwa w pamięci żywych.",
-  bio: "Jan był człowiekiem niezwykłego serca i niespożytej energii. Całe życie poświęcił rodzinie oraz swojej pasji do ogrodnictwa. Urodził się w trudnych czasach powojennych, co ukształtowało jego niezłomny charakter. Przez 40 lat pracował jako nauczyciel matematyki, wychowując pokolenia młodzieży. Jego dom był zawsze otwarty dla gości, a jego śmiech słychać było z daleka. Kochał góry, dobrą literaturę i szachy. Pozostawił po sobie pustkę, której nie da się wypełnić, ale i wspomnienia, które nigdy nie wyblakną.",
-  mainPhotoUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=988&auto=format&fit=crop', // Older gentleman portrait substitute
-  galleryUrls: [
-    'https://images.unsplash.com/photo-1509059852496-f382216640f0?q=80&w=1000&auto=format&fit=crop', // Lake
-    'https://images.unsplash.com/photo-1472214103451-9374bd1c7dd1?q=80&w=1000&auto=format&fit=crop', // Nature
-    'https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=1000&auto=format&fit=crop', // School/Books
-    'https://images.unsplash.com/photo-1460518451285-97b6aa326961?q=80&w=1000&auto=format&fit=crop', // Flowers
-  ],
-  candles: [
-    { id: '1', name: 'Anna', message: 'Tęsknimy każdego dnia, dziadku.', date: '2023-12-24' },
-    { id: '2', name: 'Marek z rodziną', message: 'Spoczywaj w pokoju.', date: '2023-11-25' }
-  ]
-};
+import { Flame, MapPin, GitGraph } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import FamilyTree from '../components/FamilyTree';
 
 const MemorialProfile: React.FC = () => {
   const { id } = useParams();
-  const [profile] = useState<ProfileType>(demoProfile); // In real app, fetch based on ID
-  const [candles, setCandles] = useState<Candle[]>(profile.candles);
+  const { profiles, user, updateBalance } = useAuth();
+  
+  // Find profile from context or fallback to null
+  const foundProfile = profiles.find(p => p.id === id);
+  const [profile, setProfile] = useState<ProfileType | null>(null);
+
+  const [candles, setCandles] = useState<Candle[]>([]);
   const [newCandleName, setNewCandleName] = useState('');
   const [newCandleMessage, setNewCandleMessage] = useState('');
   const [showCandleForm, setShowCandleForm] = useState(false);
 
+  useEffect(() => {
+    if (foundProfile) {
+        setProfile(foundProfile);
+        setCandles(foundProfile.candles);
+    }
+  }, [foundProfile]);
+
+  if (!profile) {
+      return <div className="p-12 text-center">Ładowanie profilu lub profil nie istnieje...</div>;
+  }
+
   const handleLightCandle = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCandleName.trim()) return;
+
+    const CANDLE_COST = 2.00; // 2 PLN
+    
+    // Check wallet if logged in
+    if (user) {
+        if (user.walletBalance < CANDLE_COST) {
+            alert(`Niewystarczające środki. Koszt: ${CANDLE_COST} zł, Posiadasz: ${user.walletBalance.toFixed(2)} zł.`);
+            return;
+        }
+        if (window.confirm(`Zapalenie wirtualnego znicza kosztuje ${CANDLE_COST.toFixed(2)} zł. Pobrać z portfela?`)) {
+            updateBalance(-CANDLE_COST);
+        } else {
+            return;
+        }
+    } else {
+      if (!window.confirm("Jako gość możesz zapalić jeden darmowy znicz. Kontynuować?")) return;
+    }
 
     const newCandle: Candle = {
       id: Date.now().toString(),
@@ -50,6 +64,11 @@ const MemorialProfile: React.FC = () => {
     setShowCandleForm(false);
   };
 
+  const getGoogleMapsLink = () => {
+      if (!profile.location) return '#';
+      return `https://www.google.com/maps/search/?api=1&query=${profile.location.lat},${profile.location.lng}`;
+  };
+
   return (
     <div className="bg-stone-100 min-h-screen pb-20">
       {/* Header Image with Gradient */}
@@ -62,12 +81,12 @@ const MemorialProfile: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-stone-100 via-transparent to-transparent" />
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-48 relative">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-48 relative">
         {/* Main Card */}
         <div className="bg-white rounded-lg shadow-xl overflow-hidden mb-12">
           <div className="flex flex-col items-center pt-12 pb-8 px-8 text-center">
             {/* Portrait */}
-            <div className="w-48 h-48 rounded-full border-4 border-white shadow-lg overflow-hidden mb-6 -mt-32 bg-stone-200">
+            <div className="w-48 h-48 rounded-full border-4 border-white shadow-lg overflow-hidden mb-6 -mt-32 bg-stone-200 relative z-10">
               <img 
                 src={profile.mainPhotoUrl} 
                 alt={`${profile.firstName} ${profile.lastName}`} 
@@ -84,6 +103,18 @@ const MemorialProfile: React.FC = () => {
               <span>zm. {profile.deathDate}</span>
             </div>
             
+            {profile.location && (
+                <a 
+                    href={getGoogleMapsLink()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mb-6 inline-flex items-center px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm font-medium hover:bg-green-100 transition-colors border border-green-200"
+                >
+                    <MapPin className="h-4 w-4 mr-2" />
+                    Nawiguj do grobu
+                </a>
+            )}
+
             <div className="w-16 h-1 bg-stone-300 mb-8" />
 
             {profile.quote && (
@@ -101,15 +132,27 @@ const MemorialProfile: React.FC = () => {
           </div>
         </div>
 
+        {/* Genealogical Tree Section - NEW INTERACTIVE COMPONENT */}
+        <div className="mb-12 bg-white rounded-lg shadow-lg p-4 sm:p-8">
+            <h3 className="text-2xl font-serif font-bold text-stone-900 mb-6 text-center flex justify-center items-center gap-2">
+                <GitGraph className="h-6 w-6 text-stone-600" /> Drzewo Genealogiczne
+            </h3>
+            <p className="text-center text-stone-500 text-sm mb-6">
+               Użyj myszki, aby przesuwać i przybliżać drzewo. Kliknij "Dodaj", aby uzupełnić historię rodziny.
+            </p>
+            
+            <FamilyTree profile={profile} />
+        </div>
+
         {/* Gallery */}
         <div className="mb-12">
           <h3 className="text-2xl font-serif font-bold text-stone-900 mb-6 text-center">Galeria Wspomnień</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {profile.galleryUrls.map((url, idx) => (
+            {profile.galleryUrls.length > 0 ? profile.galleryUrls.map((url, idx) => (
               <div key={idx} className="aspect-square rounded-lg overflow-hidden shadow-md cursor-pointer hover:opacity-90 transition">
                 <img src={url} alt={`Wspomnienie ${idx}`} className="w-full h-full object-cover" />
               </div>
-            ))}
+            )) : <p className="col-span-4 text-center text-stone-400 italic">Brak zdjęć w galerii</p>}
           </div>
         </div>
 
@@ -123,7 +166,7 @@ const MemorialProfile: React.FC = () => {
               onClick={() => setShowCandleForm(!showCandleForm)}
               className="px-4 py-2 bg-stone-800 text-white text-sm rounded-md hover:bg-stone-700 transition"
             >
-              Zapal znicz
+              Zapal znicz (2.00 zł)
             </button>
           </div>
 

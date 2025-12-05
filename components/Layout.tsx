@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Heart } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, Heart, User as UserIcon, LogOut, LayoutDashboard, Wallet } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -9,15 +10,21 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   const navLinks = [
     { name: 'Strona Główna', path: '/' },
     { name: 'Sklep', path: '/shop' },
-    { name: 'Przykładowy Profil', path: '/profile/demo' },
     { name: 'Stwórz Wspomnienie', path: '/create' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-stone-800">
@@ -33,7 +40,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </div>
             
             {/* Desktop Menu */}
-            <div className="hidden md:flex space-x-8">
+            <div className="hidden md:flex space-x-8 items-center">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
@@ -47,6 +54,36 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   {link.name}
                 </Link>
               ))}
+
+              {user ? (
+                <div className="flex items-center gap-4 ml-4 pl-4 border-l border-stone-200">
+                   <div className="flex items-center gap-2 text-emerald-700 font-semibold bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+                    <Wallet className="h-4 w-4" />
+                    <span>{user.walletBalance.toFixed(2)} zł</span>
+                  </div>
+                  <Link 
+                    to="/dashboard" 
+                    className="flex items-center gap-2 text-sm font-medium text-stone-600 hover:text-stone-900"
+                  >
+                    <LayoutDashboard className="h-4 w-4" />
+                    Panel {user.role === 'admin' ? 'Admin' : ''}
+                  </Link>
+                  <button 
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 text-sm font-medium text-stone-600 hover:text-red-600"
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <Link 
+                  to="/login"
+                  className="ml-4 inline-flex items-center px-4 py-2 border border-stone-300 rounded-md shadow-sm text-sm font-medium text-stone-700 bg-white hover:bg-stone-50"
+                >
+                  <UserIcon className="h-4 w-4 mr-2" />
+                  Zaloguj
+                </Link>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -79,6 +116,37 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   {link.name}
                 </Link>
               ))}
+              {user ? (
+                <>
+                   <div className="pl-3 pr-4 py-2 text-emerald-600 font-medium flex items-center gap-2">
+                     <Wallet className="h-4 w-4" /> Portfel: {user.walletBalance.toFixed(2)} zł
+                   </div>
+                   <Link
+                    to="/dashboard"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-stone-500 hover:bg-stone-50 hover:border-stone-300 hover:text-stone-700"
+                  >
+                    Panel Zarządzania
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsMenuOpen(false);
+                    }}
+                    className="block w-full text-left pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-red-500 hover:bg-red-50 hover:border-red-300"
+                  >
+                    Wyloguj się
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-stone-500 hover:bg-stone-50 hover:border-stone-300 hover:text-stone-700"
+                >
+                  Zaloguj się
+                </Link>
+              )}
             </div>
           </div>
         )}
@@ -110,7 +178,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <h3 className="text-white text-lg font-serif font-bold mb-4">Dla Klienta</h3>
               <ul className="space-y-2 text-sm">
                 <li><Link to="/shop" className="hover:text-white transition">Sklep</Link></li>
-                <li><Link to="/faq" className="hover:text-white transition">Pytania i odpowiedzi</Link></li>
+                <li><Link to="/login" className="hover:text-white transition">Logowanie</Link></li>
                 <li><Link to="/privacy" className="hover:text-white transition">Polityka prywatności</Link></li>
               </ul>
             </div>

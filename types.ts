@@ -32,6 +32,7 @@ export interface MemorialProfile {
   bio: string;
   quote: string;
   mainPhotoUrl: string;
+  headstoneUrl?: string; // Photo of the grave/headstone
   galleryUrls: string[];
   candles: Candle[];
   location?: Location;

@@ -65,8 +65,9 @@ const MOCK_PROFILES: MemorialProfile[] = [
     birthDate: '1945-03-12',
     deathDate: '2023-11-20',
     quote: "Nie umiera ten, kto trwa w pamięci żywych.",
-    bio: "Jan był człowiekiem niezwykłego serca i niespożytej energii. Całe życie poświęcił rodzinie.",
+    bio: "Jan był człowiekiem niezwykłego serca i niespożytej energii. Całe życie poświęcił rodzinie, będąc oparciem dla żony Ewy i dzieci. \n\nJego pasją było stolarstwo – potrafił wyczarować z drewna prawdziwe cuda, które do dziś zdobią domy przyjaciół. Uwielbiał góry, a każdą wolną chwilę spędzał na szlakach Tatr, ucząc wnuki szacunku do przyrody. \n\nZawsze uśmiechnięty, z dobrym słowem dla każdego. Odszedł spokojnie, pozostawiając po sobie pustkę, której nic nie wypełni, ale i piękne wspomnienia, które ogrzewają serca.",
     mainPhotoUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=988&auto=format&fit=crop',
+    headstoneUrl: 'https://img.freepik.com/darmowe-zdjecie/widok-grobow-na-cmentarzu_23-2149435512.jpg',
     galleryUrls: [],
     candles: [
       { id: '1', name: 'Anna', message: 'Tęsknimy.', date: '2023-12-24' }
@@ -87,8 +88,9 @@ const MOCK_PROFILES: MemorialProfile[] = [
     birthDate: '1938-05-15',
     deathDate: '2015-02-10',
     quote: "Rodzina jest najważniejsza.",
-    bio: "Antoni był nestorem rodu Nowaków. Przez 40 lat pracował jako inżynier budownictwa.",
+    bio: "Antoni był nestorem rodu Nowaków. Przez 40 lat pracował jako inżynier budownictwa, wznosząc mosty, które łączą ludzi do dziś. \n\nBył człowiekiem zasad, ale o gołębim sercu. Niedzielne obiady u dziadka Antoniego były tradycją, której nikt nie śmiał opuścić. Jego opowieści o dawnych czasach fascynowały kolejne pokolenia.",
     mainPhotoUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2070&auto=format&fit=crop',
+    headstoneUrl: 'https://img.freepik.com/darmowe-zdjecie/widok-grobow-na-cmentarzu_23-2149435512.jpg',
     galleryUrls: [
         'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1000&auto=format&fit=crop',
         'https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=1000&auto=format&fit=crop'
@@ -105,8 +107,9 @@ const MOCK_PROFILES: MemorialProfile[] = [
     birthDate: '1940-08-20',
     deathDate: '2018-11-05',
     quote: "Miłość nigdy nie ustaje.",
-    bio: "Maria, ukochana żona Antoniego.",
+    bio: "Maria, ukochana żona Antoniego. Kobieta ciepła, pełna empatii, która stworzyła prawdziwy dom dla swojej licznej rodziny.",
     mainPhotoUrl: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=2070&auto=format&fit=crop',
+    headstoneUrl: 'https://img.freepik.com/darmowe-zdjecie/widok-grobow-na-cmentarzu_23-2149435512.jpg',
     galleryUrls: [],
     candles: [],
     location: { lat: 50.0647, lng: 19.9450 },
